@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background-color: #212121;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 200px;
+            margin-right: 10px;
+        }
+
+        #start {
+            padding: 10px;
+            background-color: #4caf50;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .cards-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            max-width: 200px;
+            margin: 20px;
+            padding: 20px;
+            background-color: #0b0606;
+            border: 1px solid #212121;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: antiquewhite;
+            text-align: center;
+        }
+
+        #immg {
+            border-radius: 50%;
+            overflow: hidden;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-box" placeholder="Enter GitHub username">
+        <button id="start">Fetch data</button>
+    </div>
+
+    <div class="cards-container" id="cardsContainer"></div>
+
+    <script>
+        document.getElementById('start').addEventListener('click', function (e) {
+            e.preventDefault();
+            console.log("start button activate");
+
+            const xhr = new XMLHttpRequest();
+            let img;
+            let username;
+
+            const searchInput = document.getElementById('searchInput').value;
+            if (!searchInput) {
+                alert("Please enter a GitHub username.");
+                return;
+            }
+
+            const reqURL = `https://api.github.com/users/${searchInput}`;
+            xhr.open('GET', reqURL);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        const data = JSON.parse(this.responseText);
+                        username = data.login;
+                        img = data.avatar_url;
+                        console.log(username);
+                        console.log(img);
+
+                        const cardContainer = document.getElementById('cardsContainer');
+                        const card = `<div class="card">
+                            <img id="immg" src="${img}" alt="">
+                            <h2>${username}</h2>
+                        </div>`;
+
+                        cardContainer.innerHTML += card;
+                    } else {
+                        alert("User not found. Please enter a valid GitHub username.");
+                    }
+                }
+            };
+            xhr.send();
+        });
+    </script>
+</body>
+</html>
